@@ -14,7 +14,7 @@ jobs:
       list: ${{ steps.list.outputs.all }}
     steps:
       - id: list
-        uses: snow-actions/github-hosted-runners@v1.0.0
+        uses: snow-actions/list-github-hosted-runners@v1.0.0
 
   test:
     needs: [ runners ]
