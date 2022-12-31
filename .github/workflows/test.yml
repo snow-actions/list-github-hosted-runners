@@ -38,22 +38,27 @@ jobs:
         run: test $(echo ${list} | jq 'length') -gt 0
         env:
           list: ${{ steps.list.outputs.all }}
+        shell: bash
       - name: Latest list length > 0
         run: test $(echo ${list} | jq 'length') -gt 0
         env:
           list: ${{ steps.list.outputs.latest }}
+        shell: bash
       - name: Ubuntu list length > 0
         run: test $(echo ${list} | jq 'length') -gt 0
         env:
           list: ${{ steps.list.outputs.ubuntu }}
+        shell: bash
       - name: Windows list length > 0
         run: test $(echo ${list} | jq 'length') -gt 0
         env:
           list: ${{ steps.list.outputs.windows }}
+        shell: bash
       - name: macOS list length > 0
         run: test $(echo ${list} | jq 'length') -gt 0
         env:
           list: ${{ steps.list.outputs.macos }}
+        shell: bash
 
   test-passing:
     needs: [ test ]
