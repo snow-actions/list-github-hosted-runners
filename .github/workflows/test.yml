@@ -39,8 +39,8 @@ jobs:
         env:
           list: ${{ steps.list.outputs.all }}
         shell: bash
-      - name: Latest list length > 0
-        run: test $(echo ${list} | jq 'length') -gt 0
+      - name: Latest list length == 3
+        run: test $(echo ${list} | jq 'length') -eq 3
         env:
           list: ${{ steps.list.outputs.latest }}
         shell: bash
@@ -49,13 +49,28 @@ jobs:
         env:
           list: ${{ steps.list.outputs.ubuntu }}
         shell: bash
+      - name: Ubuntu list doesn't contain latest
+        run: test $(echo ${list} | jq 'endswith("-latest") | length') -eq 0
+        env:
+          list: ${{ steps.list.outputs.ubuntu }}
+        shell: bash
       - name: Windows list length > 0
         run: test $(echo ${list} | jq 'length') -gt 0
         env:
           list: ${{ steps.list.outputs.windows }}
         shell: bash
+      - name: Windows list doesn't contain latest
+        run: test $(echo ${list} | jq 'endswith("-latest") | length') -eq 0
+        env:
+          list: ${{ steps.list.outputs.windows }}
+        shell: bash
       - name: macOS list length > 0
         run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.macos }}
+        shell: bash
+      - name: macOS list doesn't contain latest
+        run: test $(echo ${list} | jq 'endswith("-latest") | length') -eq 0
         env:
           list: ${{ steps.list.outputs.macos }}
         shell: bash
