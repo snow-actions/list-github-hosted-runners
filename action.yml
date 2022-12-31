@@ -22,43 +22,55 @@ outputs:
 runs:
   using: composite
   steps:
-    - id: list
+    - name: Original list
+      id: list
       run: |
         json=$(curl -sS https://json.schemastore.org/github-workflow.json \
           | jq -c '.definitions.normalJob.properties["runs-on"].oneOf | map(select(.type == "string")) | first | .enum | map(select(. != "self-hosted"))')
+        echo "${json}"
         echo "json=${json}" >> $GITHUB_OUTPUT
       shell: bash
-    - id: all
+    - name: All runners
+      id: all
       run: |
         json=$(echo ${list} | jq -c 'map(select(endswith("-latest") | not))')
+        echo "${json}"
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
-    - id: latest
+    - name: Latest runners
+      id: latest
       run: |
         json=$(echo ${list} | jq -c 'map(select(endswith("-latest")))')
+        echo "${json}"
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
-    - id: ubuntu
+    - name: Ubuntu runners
+      id: ubuntu
       run: |
         json=$(echo ${list} | jq -c 'map(select(startswith("ubuntu-") and (endswith("-latest") | not)))')
+        echo "${json}"
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
-    - id: windows
+    - name: Windows runners
+      id: windows
       run: |
         json=$(echo ${list} | jq -c 'map(select(startswith("windows-") and (endswith("-latest") | not)))')
+        echo "${json}"
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
-    - id: macos
+    - name: macOS runners
+      id: macos
       run: |
         json=$(echo ${list} | jq -c 'map(select(startswith("macos-") and (endswith("-latest") | not)))')
+        echo "${json}"
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
