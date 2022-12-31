@@ -1,8 +1,8 @@
 name: List GitHub-hosted runners
-description: The list of GitHub-hosted runners
+description: List active GitHub-hosted runners
 branding:
   icon: list
-  color: green
+  color: blue
 outputs:
   all:
     description: All runners
