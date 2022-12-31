@@ -39,6 +39,11 @@ jobs:
         env:
           list: ${{ steps.list.outputs.all }}
         shell: bash
+      - name: All list doesn't contain latest
+        run: test $(echo ${list} | jq 'endswith("-latest") | length') -eq 0
+        env:
+          list: ${{ steps.list.outputs.all }}
+        shell: bash
       - name: Latest list length == 3
         run: test $(echo ${list} | jq 'length') -eq 3
         env:
