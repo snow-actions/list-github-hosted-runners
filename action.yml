@@ -30,35 +30,35 @@ runs:
       shell: bash
     - id: all
       run: |
-        json=$(echo ${list} | jq -c 'map(select(endswith("-latest") | not))'
+        json=$(echo ${list} | jq -c 'map(select(endswith("-latest") | not))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
     - id: latest
       run: |
-        json=$(echo ${list} | jq -c 'map(select(endswith("-latest")))'
+        json=$(echo ${list} | jq -c 'map(select(endswith("-latest")))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
     - id: ubuntu
       run: |
-        json=$(echo ${list} | jq -c 'map(select(startswith("ubuntu-")))'
+        json=$(echo ${list} | jq -c 'map(select(startswith("ubuntu-")))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
     - id: windows
       run: |
-        json=$(echo ${list} | jq -c 'map(select(startswith("windows-")))'
+        json=$(echo ${list} | jq -c 'map(select(startswith("windows-")))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
     - id: macos
       run: |
-        json=$(echo ${list} | jq -c 'map(select(startswith("macos-")))'
+        json=$(echo ${list} | jq -c 'map(select(startswith("macos-")))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
