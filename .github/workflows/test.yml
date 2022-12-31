@@ -19,6 +19,7 @@ jobs:
         uses: ./
 
   test:
+    needs: [ runners ]
     strategy:
       fail-fast: false
       matrix:
@@ -32,6 +33,27 @@ jobs:
       - run: echo "${json}"
         env:
           json: ${{ toJSON(steps.list.outputs) }}
+
+      - name: All list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.all }}
+      - name: Latest list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.latest }}
+      - name: Ubuntu list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.ubuntu }}
+      - name: Windows list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.windows }}
+      - name: macOS list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.macos }}
 
   test-passing:
     needs: [ test ]
