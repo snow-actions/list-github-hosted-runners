@@ -8,70 +8,81 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-bash:
+  runners:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      list: ${{ steps.list.outputs.all }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: list
+        uses: ./
+
+  test:
+    needs: [ runners ]
     strategy:
       fail-fast: false
       matrix:
-        # Runs on all supported runners
-        # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
-        os: [ ubuntu-22.04, ubuntu-20.04, ubuntu-18.04, windows-2022, windows-2019, macos-11, macos-10.15 ]
-    runs-on: ${{ matrix.os }}
+        runner: ${{ fromJSON(needs.runners.outputs.list) }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 5
-    defaults:
-      run:
+    steps:
+      - uses: actions/checkout@v3
+      - id: list
+        uses: ./
+      - run: echo "${json}"
+        env:
+          json: ${{ toJSON(steps.list.outputs) }}
+
+      - name: All list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.all }}
+        shell: bash
+      - name: All list doesn't contain latest
+        run: test $(echo ${list} | jq 'map(select(endswith("-latest"))) | length') -eq 0
+        env:
+          list: ${{ steps.list.outputs.all }}
+        shell: bash
+      - name: Latest list length == 3
+        run: test $(echo ${list} | jq 'length') -eq 3
+        env:
+          list: ${{ steps.list.outputs.latest }}
+        shell: bash
+      - name: Ubuntu list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.ubuntu }}
+        shell: bash
+      - name: Ubuntu list doesn't contain latest
+        run: test $(echo ${list} | jq 'map(select(endswith("-latest"))) | length') -eq 0
+        env:
+          list: ${{ steps.list.outputs.ubuntu }}
+        shell: bash
+      - name: Windows list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.windows }}
+        shell: bash
+      - name: Windows list doesn't contain latest
+        run: test $(echo ${list} | jq 'map(select(endswith("-latest"))) | length') -eq 0
+        env:
+          list: ${{ steps.list.outputs.windows }}
+        shell: bash
+      - name: macOS list length > 0
+        run: test $(echo ${list} | jq 'length') -gt 0
+        env:
+          list: ${{ steps.list.outputs.macos }}
+        shell: bash
+      - name: macOS list doesn't contain latest
+        run: test $(echo ${list} | jq 'map(select(endswith("-latest"))) | length') -eq 0
+        env:
+          list: ${{ steps.list.outputs.macos }}
         shell: bash
 
-    steps:
-      - uses: actions/checkout@v3
-
-      - id: without-parameters
-        uses: ./
-      - run: test "${GREET}" = "Hello World"
-        env:
-          GREET: ${{ steps.without-parameters.outputs.greet }}
-      - run: test "$(cat greet.txt)" = "Hello World"
-
-      - id: with-parameters
-        uses: ./
-        with:
-          who-to-greet: composite action
-      - run: test "${GREET}" = "Hello composite action"
-        env:
-          GREET: ${{ steps.with-parameters.outputs.greet }}
-      - run: test "$(cat greet.txt)" = "Hello composite action"
-
-  test-powershell:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ windows-2022, windows-2019 ]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - id: without-parameters
-        uses: ./
-      - run: test "${env:GREET}" = "Hello World"
-        env:
-          GREET: ${{ steps.without-parameters.outputs.greet }}
-      - run: test "$(cat greet.txt)" = "Hello World"
-
-      - id: with-parameters
-        uses: ./
-        with:
-          who-to-greet: composite action
-      - run: test "${env:GREET}" = "Hello composite action"
-        env:
-          GREET: ${{ steps.with-parameters.outputs.greet }}
-      - run: test "$(cat greet.txt)" = "Hello composite action"
-
-  # Make up matrix statuses into a status for status checks in branch protection rules
   test-passing:
-    needs: [ test-bash, test-powershell ]
+    needs: [ test ]
     runs-on: ubuntu-latest
-    timeout-minutes: 1
-
+    timeout-minutes: 5
     steps:
       - run: echo "All tests have passed."

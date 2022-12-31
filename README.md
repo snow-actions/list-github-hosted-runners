@@ -1,44 +1,29 @@
-[![Test](https://github.com/snow-actions/composite-action-template/actions/workflows/test.yml/badge.svg)](https://github.com/snow-actions/composite-action-template/actions/workflows/test.yml)
+# GitHub-hosted runners
 
-# Create a Composite Action
+[![Test](https://github.com/snow-actions/github-hosted-runners/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/snow-actions/github-hosted-runners/actions/workflows/test.yml)
 
-Click the `Use this template` to bootstrap the creation of a [composite action](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action).:rocket:
-
-This template includes tests, a validation workflow and versioning guidance.
-
-Learn how to use this template at [Wiki](https://github.com/snow-actions/composite-action-template/wiki).
+The list of [GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources).
 
 ## Usage
 
-### Basic
-
 ```yml
-steps:
-  - uses: snow-actions/composite-action-template@v1.0.0
+jobs:
+  runners:
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.list.outputs.all }}
+    steps:
+      - id: list
+        uses: snow-actions/github-hosted-runners@v1.0.0
+
+  test:
+    needs: [ runners ]
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: ${{ fromJSON(needs.runners.outputs.list) }}
+    runs-on: ${{ matrix.runner }}
 ```
-
-### Optional
-
-```yml
-steps:
-  - uses: snow-actions/composite-action-template@v1.0.0
-    with:
-      who-to-greet: Your name
-```
-
-## Environment variables
-
-| Name | Description | Default | Required |
-| - | - | - | - |
-| `WHO_TO_GREET` | Who to greet | `World` | no |
-
-## Inputs
-
-See [action.yml](action.yml)
-
-| Name | Description | Default | Required |
-| - | - | - | - |
-| `who-to-greet` | Who to greet | `World` | yes |
 
 ## Outputs
 
@@ -46,7 +31,11 @@ See [action.yml](action.yml)
 
 | Name | Description |
 | - | - |
-| `greet` | The word we greeted you |
+| `all` | All runners |
+| `latest` | Latest runners |
+| `ubuntu` | Ubuntu runners |
+| `windows` | Windows runners |
+| `macos` | macOS runners |
 
 ## Supported
 
@@ -60,16 +49,13 @@ See [action.yml](action.yml)
 ### Events
 
 - Any
-<!--
-- `push`
-- `pull_request`
--->
 
 ## Dependencies
 
 - Bash
-- [actions/cache](https://github.com/actions/cache) >= 3.0.0
-- [GitHub CLI](https://cli.github.com/) >= 2.6.0
+- cURL
+- [jq](https://stedolan.github.io/jq/)
+- [JSON Schema Store](https://www.schemastore.org/json/)
 
 ## Contributing
 
