@@ -44,21 +44,21 @@ runs:
       shell: bash
     - id: ubuntu
       run: |
-        json=$(echo ${list} | jq -c 'map(select(startswith("ubuntu-")))')
+        json=$(echo ${list} | jq -c 'map(select(startswith("ubuntu-") and (endswith("-latest") | not)))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
     - id: windows
       run: |
-        json=$(echo ${list} | jq -c 'map(select(startswith("windows-")))')
+        json=$(echo ${list} | jq -c 'map(select(startswith("windows-") and (endswith("-latest") | not)))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
       shell: bash
     - id: macos
       run: |
-        json=$(echo ${list} | jq -c 'map(select(startswith("macos-")))')
+        json=$(echo ${list} | jq -c 'map(select(startswith("macos-") and (endswith("-latest") | not)))')
         echo "json=${json}" >> $GITHUB_OUTPUT
       env:
         list: ${{ steps.list.outputs.json }}
