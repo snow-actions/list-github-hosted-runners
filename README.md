@@ -10,13 +10,11 @@ The list of GitHub-hosted runners.
 jobs:
   runners:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     outputs:
       list: ${{ steps.list.outputs.all }}
     steps:
-      - uses: actions/checkout@v3
       - id: list
-        uses: ./
+        uses: snow-actions/github-hosted-runners@v1.0.0
 
   test:
     needs: [ runners ]
