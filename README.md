@@ -1,8 +1,8 @@
-# GitHub-hosted runners
+# List GitHub-hosted runners
 
 [![Test](https://github.com/snow-actions/github-hosted-runners/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/snow-actions/github-hosted-runners/actions/workflows/test.yml)
 
-The list of [GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources).
+List active [GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources).
 
 ## Usage
 
