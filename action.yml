@@ -1,26 +1,59 @@
-name: Composite Action Template
-description: Get started with Composite actions
+name: GitHub-hosted runners
+description: The list of GitHub-hosted runners
 branding:
-  icon: award
+  icon: list
   color: green
-inputs:
-  who-to-greet:
-    description: Who to greet
-    required: true
-    default: World
 outputs:
-  greet:
-    description: The word we greeted you
-    value: ${{ steps.greet.outputs.word }}
+  all:
+    description: All runners
+    value: ${{ steps.all.outputs.json }}
+  latest:
+    description: Latest runners
+    value: ${{ steps.latest.outputs.json }}
+  ubuntu:
+    description: Ubuntu runners
+    value: ${{ steps.ubuntu.outputs.json }}
+  windows:
+    description: Windows runners
+    value: ${{ steps.windows.outputs.json }}
+  macos:
+    description: macOS runners
+    value: ${{ steps.macos.outputs.json }}
 runs:
   using: composite
   steps:
-    - id: greet
+    - id: list
       run: |
-        GREET="Hello ${WHO}"
-        echo "${GREET}"
-        echo "${GREET}" > greet.txt
-        echo "::set-output name=word::${GREET}"
-      shell: bash
+        json=$(curl -sS https://json.schemastore.org/github-workflow.json \
+          | jq -c '.definitions.normalJob.properties["runs-on"].oneOf | map(select(.type == "string")) | first | .enum | map(select(. != "self-hosted"))')
+        echo "json=${json}" >> $GITHUB_OUTPUT
+    - id: all
+      run: |
+        json=$(echo ${list} | jq -c 'map(select(endswith("-latest") | not))'
+        echo "json=${json}" >> $GITHUB_OUTPUT
       env:
-        WHO: ${{ inputs.who-to-greet }}
+        list: ${{ steps.list.outputs.json }}
+    - id: latest
+      run: |
+        json=$(echo ${list} | jq -c 'map(select(endswith("-latest")))'
+        echo "json=${json}" >> $GITHUB_OUTPUT
+      env:
+        list: ${{ steps.list.outputs.json }}
+    - id: ubuntu
+      run: |
+        json=$(echo ${list} | jq -c 'map(select(startswith("ubuntu-")))'
+        echo "json=${json}" >> $GITHUB_OUTPUT
+      env:
+        list: ${{ steps.list.outputs.json }}
+    - id: windows
+      run: |
+        json=$(echo ${list} | jq -c 'map(select(startswith("windows-")))'
+        echo "json=${json}" >> $GITHUB_OUTPUT
+      env:
+        list: ${{ steps.list.outputs.json }}
+    - id: macos
+      run: |
+        json=$(echo ${list} | jq -c 'map(select(startswith("macos-")))'
+        echo "json=${json}" >> $GITHUB_OUTPUT
+      env:
+        list: ${{ steps.list.outputs.json }}
